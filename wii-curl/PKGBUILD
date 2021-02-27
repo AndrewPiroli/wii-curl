@@ -13,9 +13,7 @@ depends=('ppc-zlib' 'wii-mbedtls')
 makedepends=('wii-pkg-config' 'devkitpro-pkgbuild-helpers')
 
 source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
-
-sha256sums=('SKIP')
-groups=('wii-portlibs')
+sha256sums=('fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675')
 
 build() {
   cd curl-$pkgver
