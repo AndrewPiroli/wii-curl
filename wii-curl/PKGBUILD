@@ -1,0 +1,53 @@
+# Maintainer: rw-r-r-0644 <rwrr0644@gmail.com>
+# Contributors: WinterMute <davem@devkitpro.org>, Elouan Martinet <exa@elou.world>
+
+pkgname=wii-curl
+pkgver=7.75.0
+pkgrel=1
+pkgdesc='Library for transferring data with URLs. (for Nintendo Wii homebrew development)'
+arch=('any')
+url='https://curl.haxx.se'
+license=('MIT')
+options=(!strip libtool staticlibs)
+depends=('ppc-zlib' 'wii-mbedtls')
+makedepends=('wii-pkg-config' 'devkitpro-pkgbuild-helpers')
+
+source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
+
+sha256sums=('SKIP')
+groups=('wii-portlibs')
+
+build() {
+  cd curl-$pkgver
+
+  unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
+  source /opt/devkitpro/wiivars.sh
+  
+  export MACHDEP="-DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
+  export LDFLAGS="${MACHDEP} ${LDFLAGS} -L${DEVKITPRO}/libogc/lib/wii"
+  export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include"
+
+  ./configure \
+    CFLAGS="${CPPFLAGS}" \
+    CPPFLAGS="${CPPFLAGS}" \
+    LDFLAGS="${LDFLAGS}" \
+    LIBS="-lmbedtls -lmbedcrypto -lmbedx509 -lwiisocket -logc" \
+    --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi \
+    --disable-shared --enable-static --disable-ipv6 --disable-unix-sockets \
+    --disable-manual --disable-ntlm-wb --disable-threaded-resolver --disable-socketpair \
+    --with-mbedtls=$PORTLIBS_PREFIX
+
+  make -C lib
+}
+
+package() {
+  cd curl-$pkgver
+
+  source /opt/devkitpro/wiivars.sh
+
+  make DESTDIR="$pkgdir" -C lib install
+  make DESTDIR="$pkgdir" -C include install
+  make DESTDIR="$pkgdir" install-binSCRIPTS
+
+  install -Dm644 COPYING "$pkgdir"${PORTLIBS_PREFIX}/licenses/$pkgname/COPYING
+}

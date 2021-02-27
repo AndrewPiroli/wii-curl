@@ -1,0 +1,131 @@
+diff -Nbaur a/library/net_sockets.c b/library/net_sockets.c
+--- a/library/net_sockets.c	2020-04-09 15:12:23.000000000 +0200
++++ b/library/net_sockets.c	2021-02-22 17:30:59.377440187 +0100
+@@ -32,12 +32,6 @@
+ 
+ #if defined(MBEDTLS_NET_C)
+ 
+-#if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
+-    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
+-    !defined(__HAIKU__)
+-#error "This module only works on Unix and Windows, see MBEDTLS_NET_C in config.h"
+-#endif
+-
+ #if defined(MBEDTLS_PLATFORM_C)
+ #include "mbedtls/platform.h"
+ #else
+@@ -409,7 +403,7 @@
+ 
+             memcpy( client_ip, &addr4->sin_addr.s_addr, *ip_len );
+         }
+-        else
++        /* else
+         {
+             struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *) &client_addr;
+             *ip_len = sizeof( addr6->sin6_addr.s6_addr );
+@@ -418,7 +412,7 @@
+                 return( MBEDTLS_ERR_NET_BUFFER_TOO_SMALL );
+ 
+             memcpy( client_ip, &addr6->sin6_addr.s6_addr, *ip_len);
+-        }
++        } */
+     }
+ 
+     return( 0 );
+diff -Nbaur a/library/timing.c b/library/timing.c
+--- a/library/timing.c	2020-04-09 15:12:23.000000000 +0200
++++ b/library/timing.c	2021-02-22 17:31:45.194326747 +0100
+@@ -38,12 +38,6 @@
+ 
+ #if !defined(MBEDTLS_TIMING_ALT)
+ 
+-#if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
+-    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
+-    !defined(__HAIKU__)
+-#error "This module only works on Unix and Windows, see MBEDTLS_TIMING_C in config.h"
+-#endif
+-
+ #ifndef asm
+ #define asm __asm
+ #endif
+@@ -58,6 +52,16 @@
+     LARGE_INTEGER start;
+ };
+ 
++#elif defined(GEKKO)
++
++#include <ogc/system.h>
++#include <ogc/lwp_watchdog.h>
++
++struct _hr_time
++{
++    u64 start;
++};
++
+ #else
+ 
+ #include <unistd.h>
+@@ -119,7 +123,7 @@
+           __GNUC__ && ( __amd64__ || __x86_64__ ) */
+ 
+ #if !defined(HAVE_HARDCLOCK) && defined(MBEDTLS_HAVE_ASM) &&  \
+-    defined(__GNUC__) && ( defined(__powerpc__) || defined(__ppc__) )
++    defined(__GNUC__) && ( defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) )
+ 
+ #define HAVE_HARDCLOCK
+ 
+@@ -291,6 +295,54 @@
+     (void) _beginthread( TimerProc, 0, NULL );
+ }
+ 
++#elif defined(GEKKO) /* _WIN32 && !EFIX64 && !EFI32 */
++
++unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int reset )
++{
++    struct _hr_time *t = (struct _hr_time *) val;
++
++    if( reset )
++    {
++        t->start = gettime();
++        return( 0 );
++    }
++    else
++        return( diff_msec(t->start, gettime()) );
++}
++
++static void mbedtls_alarm_cb(syswd_t alarm, void *cb_arg)
++{
++    (void) alarm;
++    (void) cb_arg;
++    mbedtls_timing_alarmed = 1;
++}
++
++void mbedtls_set_alarm( int seconds )
++{
++    static int alarm_init = 0;
++    static syswd_t alarm;
++    struct timespec tp;
++
++    if( seconds == 0 )
++    {
++        mbedtls_timing_alarmed = 1;
++        return;
++    }
++
++    mbedtls_timing_alarmed = 0;
++
++    if( !alarm_init )
++    {
++        SYS_CreateAlarm(&alarm);
++        alarm_init = 1;
++    }
++
++    tp.tv_sec = seconds;
++    tp.tv_nsec = 0;
++
++    SYS_SetAlarm(alarm, &tp, mbedtls_alarm_cb, NULL);
++}
++
+ #else /* _WIN32 && !EFIX64 && !EFI32 */
+ 
+ unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int reset )
