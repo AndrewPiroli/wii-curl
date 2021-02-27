@@ -15,12 +15,10 @@ source=("${url}/-/archive/v${pkgver}/libwiisocket-v${pkgver}.tar.bz2")
 sha256sums=('fbfffff214cb05f5d8fbb8f67e38631c8017f15ed1355f4ed82ac9ee5bc417ca')
 
 build() {
-  cd libwiisocket-v$pkgver
-  make
+  make -C libwiisocket-v$pkgver
 }
 
 package() {
-  cd libwiisocket-v$pkgver
-  make install
+  make -C libwiisocket-v$pkgver DESTDIR=$pkgdir install
 }
  
