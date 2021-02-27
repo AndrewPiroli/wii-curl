@@ -10,7 +10,7 @@ url='https://tls.mbed.org/'
 license=('apache')
 options=(!strip libtool staticlibs)
 depends=(ppc-zlib)
-makedepends=('wii-pkg-config' 'devkitpro-pkgbuild-helpers')
+makedepends=('wii-pkg-config' 'libwiisocket' 'devkitpro-pkgbuild-helpers')
 source=( "https://tls.mbed.org/download/mbedtls-${pkgver}-apache.tgz"
          'wii-mbedtls.patch' )
 
