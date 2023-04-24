@@ -9,7 +9,7 @@ url='https://gitlab.com/4TU/libwiisocket'
 license=('GPL')
 options=(!strip libtool staticlibs)
 depends=('libogc' 'devkitPPC')
-makedepends=('wii-pkg-config' 'devkitpro-pkgbuild-helpers')
+makedepends=('wii-pkg-config')
 
 source=("${url}/-/archive/v${pkgver}/libwiisocket-v${pkgver}.tar.bz2")
 sha256sums=('fbfffff214cb05f5d8fbb8f67e38631c8017f15ed1355f4ed82ac9ee5bc417ca')

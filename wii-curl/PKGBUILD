@@ -10,7 +10,7 @@ url='https://curl.haxx.se'
 license=('MIT')
 options=(!strip libtool staticlibs)
 depends=('ppc-zlib' 'libwiisocket' 'wii-mbedtls')
-makedepends=('wii-pkg-config' 'devkitpro-pkgbuild-helpers')
+makedepends=('wii-pkg-config')
 
 source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
 sha256sums=('fe0c49d8468249000bda75bcfdf9e30ff7e9a86d35f1a21f428d79c389d55675')
@@ -19,18 +19,21 @@ build() {
   cd curl-$pkgver
 
   unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
-  source /opt/devkitpro/wiivars.sh
+  export DEVKITPRO=/opt/devkitpro
+  export DEVKITPPC=$DEVKITPRO/devkitPPC
+  export PORTLIBS_PREFIX=$DEVKITPRO/portlibs/wii
   
   export MACHDEP="-DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
-  export LDFLAGS="${MACHDEP} ${LDFLAGS} -L${DEVKITPRO}/libogc/lib/wii"
+  export LDFLAGS="${MACHDEP} ${LDFLAGS} -L${DEVKITPRO}/libogc/lib/wii/lib -L${DEVKITPRO}/portlibs/wii/lib -L${DEVKITPRO}/portlibs/ppc/lib"
   export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include"
 
+
   ./configure \
-    CFLAGS="${CPPFLAGS}" \
+    CFLAGS="${CPPFLAGS} -Wl,-L${DEVKITPRO}/portlibs/wii/lib -Wl,-L${DEVKITPRO}/portlibs/ppc/lib -I${DEVKITPRO}/portlibs/ppc/include -I${DEVKITPRO}/portlibs/wii/include -I${DEVKITPRO}/libogc/include -L${DEVKITPRO}/libogc/lib/wii" \
     CPPFLAGS="${CPPFLAGS}" \
     LDFLAGS="${LDFLAGS}" \
     LIBS="-lmbedtls -lmbedcrypto -lmbedx509 -lwiisocket -logc" \
-    --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi \
+    --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi --target=powerpc-eabi \
     --disable-shared --enable-static --disable-ipv6 --disable-unix-sockets \
     --disable-manual --disable-ntlm-wb --disable-threaded-resolver --disable-socketpair \
     --with-mbedtls=$PORTLIBS_PREFIX
@@ -39,9 +42,11 @@ build() {
 }
 
 package() {
+  export DEVKITPRO=/opt/devkitpro
+  export DEVKITPPC=$DEVKITPRO/devkitPPC
+  export PORTLIBS_PREFIX=$DEVKITPRO/portlibs/wii
+  export PATH=$DEVKITPPC/bin/:$PATH
   cd curl-$pkgver
-
-  source /opt/devkitpro/wiivars.sh
 
   make DESTDIR="$pkgdir" -C lib install
   make DESTDIR="$pkgdir" -C include install

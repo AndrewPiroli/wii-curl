@@ -10,20 +10,19 @@ url='https://tls.mbed.org/'
 license=('apache')
 options=(!strip libtool staticlibs)
 depends=(ppc-zlib)
-makedepends=('wii-pkg-config' 'libwiisocket' 'devkitpro-pkgbuild-helpers')
-source=( "https://tls.mbed.org/download/mbedtls-${pkgver}-apache.tgz"
+makedepends=('wii-pkg-config' 'libwiisocket')
+source=( "https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-${pkgver}.tar.gz"
          'wii-mbedtls.patch' )
 
-sha256sums=('66455e23a6190a30142cdc1113f7418158839331a9d8e6b0778631d077281770'
+sha256sums=('38ea2768669d04dab7fe7d1114e489378bf4f23e5b96271a3ed4cecd99a3f807'
             'SKIP')
 
 build() {
-  cd mbedtls-$pkgver
+  cd mbedtls-mbedtls-$pkgver
 
   patch -Np1 -i $srcdir/wii-mbedtls.patch
 
   unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
-  source /opt/devkitpro/wiivars.sh
 
   ./scripts/config.pl set MBEDTLS_NO_PLATFORM_ENTROPY
   ./scripts/config.pl set MBEDTLS_TIMING_C
@@ -37,11 +36,11 @@ build() {
   export LDFLAGS="${MACHDEP} ${LDFLAGS} -L${DEVKITPRO}/libogc/lib/wii"
   export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include"
 
-  cmake -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/wii.cmake \
-    -DCMAKE_INSTALL_PREFIX="${PORTLIBS_PREFIX}" \
+  cmake -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake \
+    -DCMAKE_INSTALL_PREFIX="${DEVKITPRO}/portlibs/wii" \
     -DCMAKE_C_FLAGS="${CPPFLAGS}" \
     -DCMAKE_CXX_FLAGS="${CPPFLAGS}" \
-    -DZLIB_ROOT="${PORTLIBS_PPC}" \
+    -DZLIB_ROOT="${DEVKITPRO}/portlibs/ppc" \
     -DENABLE_ZLIB_SUPPORT=TRUE -DENABLE_TESTING=FALSE -DENABLE_PROGRAMS=FALSE \
     .
 
@@ -51,9 +50,7 @@ build() {
 
 package() {
 
-  cd mbedtls-$pkgver
-
-  source /opt/devkitpro/wiivars.sh
+  cd mbedtls-mbedtls-$pkgver
 
   make install DESTDIR="$pkgdir"
 
