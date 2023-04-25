@@ -24,16 +24,17 @@ build() {
   export PORTLIBS_PREFIX=$DEVKITPRO/portlibs/wii
   
   export MACHDEP="-DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
-  export LDFLAGS="${MACHDEP} ${LDFLAGS} -L${DEVKITPRO}/libogc/lib/wii/lib -L${DEVKITPRO}/portlibs/wii/lib -L${DEVKITPRO}/portlibs/ppc/lib"
+  export LDFLAGS="${MACHDEP} ${LDFLAGS}"
   export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include"
+  export DKP_INCS="-Wl,-L${DEVKITPRO}/portlibs/wii/lib -Wl,-L${DEVKITPRO}/portlibs/ppc/lib -I${DEVKITPRO}/portlibs/ppc/include -I${DEVKITPRO}/portlibs/wii/include -I${DEVKITPRO}/libogc/include -L${DEVKITPRO}/libogc/lib/wii"
 
 
   ./configure \
-    CFLAGS="${CPPFLAGS} -Wl,-L${DEVKITPRO}/portlibs/wii/lib -Wl,-L${DEVKITPRO}/portlibs/ppc/lib -I${DEVKITPRO}/portlibs/ppc/include -I${DEVKITPRO}/portlibs/wii/include -I${DEVKITPRO}/libogc/include -L${DEVKITPRO}/libogc/lib/wii" \
+    CFLAGS="${CPPFLAGS} ${DKP_INCS}" \
     CPPFLAGS="${CPPFLAGS}" \
     LDFLAGS="${LDFLAGS}" \
-    LIBS="-lmbedtls -lmbedcrypto -lmbedx509 -lwiisocket -logc" \
-    --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi --target=powerpc-eabi \
+    LIBS="-lmbedtls -lmbedcrypto -lmbedx509 -logc -lwiisocket" \
+    --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi \
     --disable-shared --enable-static --disable-ipv6 --disable-unix-sockets \
     --disable-manual --disable-ntlm-wb --disable-threaded-resolver --disable-socketpair \
     --with-mbedtls=$PORTLIBS_PREFIX
