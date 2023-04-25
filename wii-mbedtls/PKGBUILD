@@ -10,7 +10,7 @@ url='https://tls.mbed.org/'
 license=('apache')
 options=(!strip libtool staticlibs)
 depends=(ppc-zlib)
-makedepends=('wii-pkg-config' 'libwiisocket')
+makedepends=('wii-cmake' 'wii-pkg-config' 'libwiisocket')
 source=( "https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-${pkgver}.tar.gz"
          'wii-mbedtls.patch' )
 
