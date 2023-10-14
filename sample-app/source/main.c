@@ -42,31 +42,6 @@ static size_t cb(void *data, size_t size, size_t nmemb, void *clientp) {
 	return realsize;
 }
 
-
-u32* calc_sha1(const void* data, size_t size) {
-	u32* ret = malloc(20);
-	memset(ret, 0, 20);
-	if (!ret) return NULL;
-	mbedtls_sha1_ret(data, size, (u8*)ret);
-	return ret;
-	/*
-	 * libogc y u no work?
-	if (!SHA_Init()) {puts("Z"); return NULL; }
-	char* aligned_data = aligned_alloc(64, ALIGN_UP(size, 64));
-	if (!aligned_data) { puts("A"); return NULL; }
-	memcpy(aligned_data, data, size);
-	u32 *ret = aligned_alloc(64, 64);
-	if (!ret) { puts("B"); return NULL; }
-	memset(ret, 0, size);
-	sha_context ctx ATTRIBUTE_ALIGN(64) = {0};
-	if (!SHA_InitializeContext(&ctx)) {puts("C"); return NULL;}
-	if (!SHA_Calculate(&ctx, aligned_data, size, ret)) {puts("D"); return NULL; }
-	//free(aligned_data);
-	if (!SHA_Close()) { puts("E"); return NULL; }
-	return ret;
-	*/
-}
-
 char* http_head(char* url, char* err) {
 	CURL* curl = curl_easy_init();
 	if (!curl){
@@ -190,15 +165,15 @@ int main(void) {
 	else {
 		size_t size = ftp_response->size;
 		printf("Response size: %d\n", size);
-		u32* hash = calc_sha1(ftp_response->response, ftp_response->size);
-		if (!hash) { goto loop; }
+		u32 hash[5] = {0};
+		// Dolphin does not implement /dev/sha so use mbedtls instead of libogc
+		mbedtls_sha1_ret((u8*)ftp_response->response, ftp_response->size, (u8*)&hash);
 		printf("SHA1: ");
 		for (size_t i = 0; i < 5; i++)
 			printf("%04x", hash[i]);
 		putchar('\n');
 		free(ftp_response->response);
 		free(ftp_response);
-		free(hash);
 	}
 
 loop:
