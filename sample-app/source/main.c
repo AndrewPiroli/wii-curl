@@ -74,6 +74,10 @@ struct memory* ftp_dl(char* url, char* err, char* login) {
 		return NULL;
 	}
 	struct memory* ret = malloc(sizeof *ret);
+	if (!ret) {
+		err = "OOM in FTP setup";
+		return NULL;
+	}
 	ret->response = malloc(1);
 	ret->size = 0;
 	curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -87,7 +91,7 @@ struct memory* ftp_dl(char* url, char* err, char* login) {
 		return ret;
 	}
 	else {
-		printf("fail %d\n", res);
+		printf("FTP Failed curl ret: %d\n", res);
 		free(ret->response);
 		free(ret);
 		return NULL;
@@ -167,7 +171,7 @@ int main(void) {
 		printf("Response size: %d\n", size);
 		u32 hash[5] = {0};
 		// Dolphin does not implement /dev/sha so use mbedtls instead of libogc
-		mbedtls_sha1_ret((u8*)ftp_response->response, ftp_response->size, (u8*)&hash);
+		mbedtls_sha1_ret((u8*)ftp_response->response, size, (u8*)&hash);
 		printf("SHA1: ");
 		for (size_t i = 0; i < 5; i++)
 			printf("%04x", hash[i]);
