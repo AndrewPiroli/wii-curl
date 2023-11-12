@@ -174,7 +174,7 @@ int main(void) {
 		mbedtls_sha1_ret((u8*)ftp_response->response, size, (u8*)&hash);
 		printf("SHA1: ");
 		for (size_t i = 0; i < 5; i++)
-			printf("%04x", hash[i]);
+			printf("%08x", hash[i]);
 		putchar('\n');
 		free(ftp_response->response);
 		free(ftp_response);
