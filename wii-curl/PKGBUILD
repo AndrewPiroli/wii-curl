@@ -37,7 +37,7 @@ build() {
     --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi \
     --disable-shared --enable-static --disable-ipv6 --disable-unix-sockets \
     --disable-manual --disable-ntlm-wb --disable-threaded-resolver --disable-socketpair \
-    --with-mbedtls=$PORTLIBS_PREFIX
+    --with-mbedtls=$PORTLIBS_PREFIX --enable-websockets
 
   make -C lib
 }
