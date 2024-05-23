@@ -27,16 +27,16 @@ index bdd82ac6f..67ce16a75 100644
 @@ -422,7 +416,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
              }
  
-             memcpy(client_ip, &addr4->sin_addr.s_addr, *ip_len);
+             memcpy(client_ip, &addr4->sin_addr.s_addr, *cip_len);
 -        } else {
 +        } /* else {
              struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *) &client_addr;
-             *ip_len = sizeof(addr6->sin6_addr.s6_addr);
+             *cip_len = sizeof(addr6->sin6_addr.s6_addr);
  
 @@ -431,7 +425,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
              }
  
-             memcpy(client_ip, &addr6->sin6_addr.s6_addr, *ip_len);
+             memcpy(client_ip, &addr6->sin6_addr.s6_addr, *cip_len);
 -        }
 +        } */
      }
