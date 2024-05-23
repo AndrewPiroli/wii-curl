@@ -2,7 +2,7 @@
 # Contributors: WinterMute <davem@devkitpro.org>, Elouan Martinet <exa@elou.world>
 
 pkgname=wii-curl
-pkgver=8.7.1
+pkgver=8.8.0
 pkgrel=1
 pkgdesc='Library for transferring data with URLs. (for Nintendo Wii homebrew development)'
 arch=('any')
@@ -12,11 +12,13 @@ options=(!strip libtool staticlibs)
 depends=('ppc-zlib' 'libwiisocket' 'wii-mbedtls')
 makedepends=('wii-pkg-config')
 
-source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
-sha256sums=('6fea2aac6a4610fbd0400afb0bcddbe7258a64c63f1f68e5855ebc0c659710cd')
+source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz" "8.8.0-mbedtls-fix.patch")
+sha256sums=('0f58bb95fc330c8a46eeb3df5701b0d90c9d9bfcc42bd1cd08791d12551d4400' 'SKIP')
 
 build() {
   cd curl-$pkgver
+
+  patch -Np1 -i $srcdir/8.8.0-mbedtls-fix.patch
 
   unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
   export DEVKITPRO=/opt/devkitpro
