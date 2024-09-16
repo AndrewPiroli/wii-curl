@@ -2,7 +2,7 @@
 # Contributors: WinterMute <davem@devkitpro.org>, Elouan Martinet <exa@elou.world>
 
 pkgname=wii-mbedtls
-pkgver=2.28.8
+pkgver=2.28.9
 pkgrel=1
 pkgdesc='An open source, portable, easy to use, readable and flexible SSL library (for Nintendo Wii homebrew development)'
 arch=('any')
@@ -14,7 +14,7 @@ makedepends=('wii-cmake' 'wii-pkg-config' 'libwiisocket')
 source=( "https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-${pkgver}.tar.gz"
          'wii-mbedtls.patch' )
 
-sha256sums=('98b91415d86311b9c08f383906f58332429605895b53bb598d61b0bc29128a1d'
+sha256sums=('53231b898f908dde38879bf27a29ddf670dee252dec37681f2c1f83588c0c40e'
             'SKIP')
 
 build() {
