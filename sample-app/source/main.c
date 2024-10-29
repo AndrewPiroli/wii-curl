@@ -9,7 +9,7 @@
 #include <gccore.h>
 
 #define HTTP_TEST_URL "http://httpforever.com"
-#define FTP_TEST_URL "ftp://speedtest.tele2.net/1MB.zip"
+#define FTP_TEST_URL "ftp://test.rebex.net/pub/example/WinFormClient.png"
 
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
@@ -161,7 +161,7 @@ int main(void) {
 	}
 	// Test FTP
 	puts("FTP GET: " FTP_TEST_URL);
-	struct memory* ftp_response = ftp_dl(FTP_TEST_URL, (char*)&err, "anonymous:asdf");
+	struct memory* ftp_response = ftp_dl(FTP_TEST_URL, (char*)&err, "demo:password");
 	if (!ftp_response) {
 		printf("FAIL: %s\n", err);
 		goto loop;
