@@ -1,21 +1,21 @@
 diff --git a/library/net_sockets.c b/library/net_sockets.c
-index bdd82ac6f..67ce16a75 100644
+index ef89a88ef0..7ec33e66fa 100644
 --- a/library/net_sockets.c
 +++ b/library/net_sockets.c
-@@ -31,12 +31,6 @@
+@@ -19,12 +19,6 @@
  
  #if defined(MBEDTLS_NET_C)
  
 -#if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
 -    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
 -    !defined(__HAIKU__) && !defined(__midipix__)
--#error "This module only works on Unix and Windows, see MBEDTLS_NET_C in config.h"
+-#error "This module only works on Unix and Windows, see MBEDTLS_NET_C in mbedtls_config.h"
 -#endif
 -
  #include "mbedtls/platform.h"
  
  #include "mbedtls/net_sockets.h"
-@@ -341,7 +335,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
+@@ -325,7 +319,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
  
  #if defined(__socklen_t_defined) || defined(_SOCKLEN_T) ||  \
      defined(_SOCKLEN_T_DECLARED) || defined(__DEFINED_socklen_t) || \
@@ -24,47 +24,66 @@ index bdd82ac6f..67ce16a75 100644
      socklen_t n = (socklen_t) sizeof(client_addr);
      socklen_t type_len = (socklen_t) sizeof(type);
  #else
-@@ -422,7 +416,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
+@@ -406,7 +400,9 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
              }
  
              memcpy(client_ip, &addr4->sin_addr.s_addr, *cip_len);
 -        } else {
-+        } /* else {
++        }
++#ifndef GEKKO
++	else {
              struct sockaddr_in6 *addr6 = (struct sockaddr_in6 *) &client_addr;
              *cip_len = sizeof(addr6->sin6_addr.s6_addr);
  
-@@ -431,7 +425,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
-             }
+@@ -416,6 +412,7 @@ int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
  
              memcpy(client_ip, &addr6->sin6_addr.s6_addr, *cip_len);
--        }
-+        } */
+         }
++#endif
      }
  
      return 0;
+diff --git a/library/platform_util.c b/library/platform_util.c
+index 19ef07aead..03e825af2c 100644
+--- a/library/platform_util.c
++++ b/library/platform_util.c
+@@ -257,6 +257,14 @@ mbedtls_ms_time_t mbedtls_ms_time(void)
+                   ((mbedtls_ms_time_t) (ct.dwHighDateTime) << 32LL))/10000;
+     return current_ms;
+ }
++#elif defined(GEKKO)
++#include <ogc/system.h>
++#include <ogc/lwp_watchdog.h>
++mbedtls_ms_time_t mbedtls_ms_time(void)
++{
++	return ticks_to_millisecs(gettime());
++}
++
+ #else
+ #error "No mbedtls_ms_time available"
+ #endif
 diff --git a/library/timing.c b/library/timing.c
-index 47e34f922..a48a4ce27 100644
+index 58f1c1ec2e..941d1d1f71 100644
 --- a/library/timing.c
 +++ b/library/timing.c
-@@ -27,12 +27,6 @@
+@@ -13,12 +13,6 @@
  
  #if !defined(MBEDTLS_TIMING_ALT)
  
 -#if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
 -    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
 -    !defined(__HAIKU__) && !defined(__midipix__)
--#error "This module only works on Unix and Windows, see MBEDTLS_TIMING_C in config.h"
+-#error "This module only works on Unix and Windows, see MBEDTLS_TIMING_C in mbedtls_config.h"
 -#endif
 -
- /* *INDENT-OFF* */
- #ifndef asm
- #define asm __asm
-@@ -48,6 +42,16 @@ struct _hr_time {
+ #if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
+
+ #include <windows.h>
+@@ -28,6 +22,15 @@ struct _hr_time {
      LARGE_INTEGER start;
  };
  
 +#elif defined(GEKKO)
-+
 +#include <ogc/system.h>
 +#include <ogc/lwp_watchdog.h>
 +
@@ -76,65 +95,22 @@ index 47e34f922..a48a4ce27 100644
  #else
  
  #include <unistd.h>
-@@ -108,7 +112,7 @@ unsigned long mbedtls_timing_hardclock(void)
-           __GNUC__ && ( __amd64__ || __x86_64__ ) */
- 
- #if !defined(HAVE_HARDCLOCK) && defined(MBEDTLS_HAVE_ASM) &&  \
--    defined(__GNUC__) && (defined(__powerpc__) || defined(__ppc__))
-+    defined(__GNUC__) && (defined(__powerpc__) || defined(__ppc__)) || defined(__PPC__)
- 
- #define HAVE_HARDCLOCK
- 
-@@ -273,6 +277,54 @@ void mbedtls_set_alarm(int seconds)
-     (void) _beginthread(TimerProc, 0, NULL);
+@@ -81,6 +84,20 @@ unsigned long mbedtls_timing_get_timer(struct mbedtls_timing_hr_time *val, int r
+     }
  }
  
-+#elif defined(GEKKO) /* _WIN32 && !EFIX64 && !EFI32 */
++#elif defined(GEKKO)
 +
 +unsigned long mbedtls_timing_get_timer(struct mbedtls_timing_hr_time *val, int reset)
 +{
 +    struct _hr_time *t = (struct _hr_time *) val;
 +
-+    if( reset )
-+    {
-+        t->start = gettime();
-+        return( 0 );
++    if (reset) {
++	t->start = gettime();
++        return 0;
++    } else {
++	return diff_msec(t->start, gettime());
 +    }
-+    else
-+        return( diff_msec(t->start, gettime()) );
-+}
-+
-+static void mbedtls_alarm_cb(syswd_t alarm, void *cb_arg)
-+{
-+    (void) alarm;
-+    (void) cb_arg;
-+    mbedtls_timing_alarmed = 1;
-+}
-+
-+void mbedtls_set_alarm( int seconds )
-+{
-+    static int alarm_init = 0;
-+    static syswd_t alarm;
-+    struct timespec tp;
-+
-+    if( seconds == 0 )
-+    {
-+        mbedtls_timing_alarmed = 1;
-+        return;
-+    }
-+
-+    mbedtls_timing_alarmed = 0;
-+
-+    if( !alarm_init )
-+    {
-+        SYS_CreateAlarm(&alarm);
-+        alarm_init = 1;
-+    }
-+
-+    tp.tv_sec = seconds;
-+    tp.tv_nsec = 0;
-+
-+    SYS_SetAlarm(alarm, &tp, mbedtls_alarm_cb, NULL);
 +}
 +
  #else /* _WIN32 && !EFIX64 && !EFI32 */

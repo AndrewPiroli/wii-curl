@@ -2,7 +2,7 @@
 # Contributors: WinterMute <davem@devkitpro.org>, Elouan Martinet <exa@elou.world>
 
 pkgname=wii-mbedtls
-pkgver=2.28.9
+pkgver=3.6.2
 pkgrel=1
 pkgdesc='An open source, portable, easy to use, readable and flexible SSL library (for Nintendo Wii homebrew development)'
 arch=('any')
@@ -11,14 +11,14 @@ license=('apache')
 options=(!strip libtool staticlibs)
 depends=(ppc-zlib)
 makedepends=('wii-cmake' 'wii-pkg-config' 'libwiisocket')
-source=( "https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-${pkgver}.tar.gz"
+source=( "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-${pkgver}/mbedtls-${pkgver}.tar.bz2"
          'wii-mbedtls.patch' )
 
-sha256sums=('53231b898f908dde38879bf27a29ddf670dee252dec37681f2c1f83588c0c40e'
+sha256sums=('8b54fb9bcf4d5a7078028e0520acddefb7900b3e66fec7f7175bb5b7d85ccdca'
             'SKIP')
 
 build() {
-  cd mbedtls-mbedtls-$pkgver
+  cd mbedtls-$pkgver
 
   patch -Np1 -i $srcdir/wii-mbedtls.patch
 
@@ -26,7 +26,6 @@ build() {
 
   ./scripts/config.pl set MBEDTLS_NO_PLATFORM_ENTROPY
   ./scripts/config.pl set MBEDTLS_TIMING_C
-  ./scripts/config.pl set MBEDTLS_HAVEGE_C
   ./scripts/config.pl set MBEDTLS_CMAC_C
   ./scripts/config.pl unset MBEDTLS_ENTROPY_HARDWARE_ALT
   ./scripts/config.pl unset MBEDTLS_SELF_TEST
@@ -39,9 +38,7 @@ build() {
   cmake -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake \
     -DCMAKE_INSTALL_PREFIX="${DEVKITPRO}/portlibs/wii" \
     -DCMAKE_C_FLAGS="${CPPFLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CPPFLAGS}" \
-    -DZLIB_ROOT="${DEVKITPRO}/portlibs/ppc" \
-    -DENABLE_ZLIB_SUPPORT=TRUE -DENABLE_TESTING=FALSE -DENABLE_PROGRAMS=FALSE \
+    -DENABLE_TESTING=FALSE -DENABLE_PROGRAMS=FALSE \
     .
 
   make
@@ -50,7 +47,7 @@ build() {
 
 package() {
 
-  cd mbedtls-mbedtls-$pkgver
+  cd mbedtls-$pkgver
 
   make install DESTDIR="$pkgdir"
 

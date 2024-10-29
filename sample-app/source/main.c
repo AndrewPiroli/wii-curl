@@ -171,7 +171,7 @@ int main(void) {
 		printf("Response size: %d\n", size);
 		u32 hash[5] = {0};
 		// Dolphin does not implement /dev/sha so use mbedtls instead of libogc
-		mbedtls_sha1_ret((u8*)ftp_response->response, size, (u8*)&hash);
+		mbedtls_sha1((u8*)ftp_response->response, size, (u8*)&hash);
 		printf("SHA1: ");
 		for (size_t i = 0; i < 5; i++)
 			printf("%08x", hash[i]);
