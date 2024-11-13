@@ -8,11 +8,19 @@
 #include <gctypes.h>
 #include <gccore.h>
 
-#define HTTP_TEST_URL "http://httpforever.com"
+#include "cacert_pem.h"
+
+#define HTTP_TEST_URL "https://sha256.badssl.com/"
 #define FTP_TEST_URL "ftp://test.rebex.net/pub/example/WinFormClient.png"
 
 static void *xfb = NULL;
 static GXRModeObj *rmode = NULL;
+
+static struct curl_blob ca_info = {
+	.data = (u8*)cacert_pem,
+	.len = cacert_pem_size,
+	.flags = CURL_BLOB_COPY,
+};
 
 bool done = false;
 bool die = false;
@@ -51,8 +59,10 @@ char* http_head(char* url, char* err) {
 	struct memory chunk = {0};
 	chunk.response = malloc(1);
 	chunk.size = 0;
+	curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
+	curl_easy_setopt(curl, CURLOPT_CAINFO_BLOB, &ca_info);
 	curl_easy_setopt(curl, CURLOPT_URL, url);
-	curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, "HTTP");
+	curl_easy_setopt(curl, CURLOPT_PROTOCOLS_STR, "HTTP,HTTPS");
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, err);
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 1);
 	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, cb);

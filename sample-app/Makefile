@@ -123,6 +123,11 @@ $(OUTPUT).elf: $(OFILES)
 
 $(OFILES_SOURCES) : $(HFILES)
 
+# Embed pem files
+%.pem.o %_pem.h: %.pem
+	@echo $(notdir $<)
+	$(bin2o)
+
 -include $(DEPENDS)
 
 #---------------------------------------------------------------------------------
