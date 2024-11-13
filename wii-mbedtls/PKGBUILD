@@ -3,7 +3,7 @@
 
 pkgname=wii-mbedtls
 pkgver=3.6.2
-pkgrel=1
+pkgrel=2
 pkgdesc='An open source, portable, easy to use, readable and flexible SSL library (for Nintendo Wii homebrew development)'
 arch=('any')
 url='https://tls.mbed.org/'
@@ -24,7 +24,8 @@ build() {
 
   unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
 
-  ./scripts/config.pl set MBEDTLS_NO_PLATFORM_ENTROPY
+  ./scripts/config.pl unset MBEDTLS_NO_PLATFORM_ENTROPY
+  ./scripts/config.pl set MBEDTLS_ENTROPY_C
   ./scripts/config.pl set MBEDTLS_TIMING_C
   ./scripts/config.pl set MBEDTLS_CMAC_C
   ./scripts/config.pl unset MBEDTLS_ENTROPY_HARDWARE_ALT
