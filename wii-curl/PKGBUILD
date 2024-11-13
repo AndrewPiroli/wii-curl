@@ -2,7 +2,7 @@
 # Contributors: WinterMute <davem@devkitpro.org>, Elouan Martinet <exa@elou.world>
 
 pkgname=wii-curl
-pkgver=8.10.0
+pkgver=8.11.0
 pkgrel=1
 pkgdesc='Library for transferring data with URLs. (for Nintendo Wii homebrew development)'
 arch=('any')
@@ -12,12 +12,11 @@ options=(!strip libtool staticlibs)
 depends=('ppc-zlib' 'libwiisocket' 'wii-mbedtls')
 makedepends=('wii-pkg-config')
 
-source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz" "8.10.0-ipv6-fix.patch")
-sha256sums=('e6b142f0e85e954759d37e26a3627e2278137595be80e3a860c4353e4335e5a0' 'SKIP')
+source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
+sha256sums=('db59cf0d671ca6e7f5c2c5ec177084a33a79e04c97e71cf183a5cdea235054eb')
 
 build() {
   cd curl-$pkgver
-  patch -Np1 -i $srcdir/8.10.0-ipv6-fix.patch
 
   unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
   export DEVKITPRO=/opt/devkitpro
