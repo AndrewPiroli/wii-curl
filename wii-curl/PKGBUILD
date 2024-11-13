@@ -25,7 +25,7 @@ build() {
   
   export MACHDEP="-DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
   export LDFLAGS="${MACHDEP} ${LDFLAGS}"
-  export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include"
+  export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include -O2"
   export DKP_INCS="-Wl,-L${DEVKITPRO}/portlibs/wii/lib -Wl,-L${DEVKITPRO}/portlibs/ppc/lib -I${DEVKITPRO}/portlibs/ppc/include -I${DEVKITPRO}/portlibs/wii/include -I${DEVKITPRO}/libogc/include -L${DEVKITPRO}/libogc/lib/wii"
 
 

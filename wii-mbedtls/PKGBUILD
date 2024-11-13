@@ -34,11 +34,11 @@ build() {
 
   export MACHDEP="-DGEKKO -mrvl -mcpu=750 -meabi -mhard-float"
   export LDFLAGS="${MACHDEP} ${LDFLAGS} -L${DEVKITPRO}/libogc/lib/wii"
-  export CPPFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include"
+  export CFLAGS="${MACHDEP} ${CPPFLAGS} -I${DEVKITPRO}/libogc/include -O2"
 
   cmake -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Wii.cmake \
     -DCMAKE_INSTALL_PREFIX="${DEVKITPRO}/portlibs/wii" \
-    -DCMAKE_C_FLAGS="${CPPFLAGS}" \
+    -DCMAKE_C_FLAGS="${CFLAGS}" \
     -DENABLE_TESTING=FALSE -DENABLE_PROGRAMS=FALSE \
     .
 
