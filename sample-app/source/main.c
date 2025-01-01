@@ -55,7 +55,7 @@ static int verbose_print(CURL *handle, curl_infotype type, char *data, size_t si
 	(void)data;
 	(void)clientp;
 
-	if (type == CURLINFO_TEXT && memcmp(data, "mbedTLS", 7) == 0) {
+	if (type == CURLINFO_TEXT && size >= 7 && memcmp(data, "mbedTLS", 7) == 0) {
 		char* nullterminated = malloc(size + 1);
 		if (!nullterminated)
 			return 0;
