@@ -2,18 +2,18 @@
 # Contributors: WinterMute <davem@devkitpro.org>, Elouan Martinet <exa@elou.world>
 
 pkgname=wii-curl
-pkgver=8.14.0
+pkgver=8.15.0
 pkgrel=1
 pkgdesc='Library for transferring data with URLs. (for Nintendo Wii homebrew development)'
 arch=('any')
 url='https://curl.haxx.se'
 license=('MIT')
 options=(!strip libtool staticlibs)
-depends=('ppc-zlib' 'libwiisocket' 'wii-mbedtls')
+depends=('ppc-zlib' 'libwiisocket' 'wii-mbedtls>=3.6.4-1')
 makedepends=('wii-pkg-config')
 
 source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
-sha256sums=('b3634cfc538c72c9c6ca794ef4c73d7fdbd171e8dee2db837d83a5e45231002a')
+sha256sums=('6cd0a8a5b126ddfda61c94dc2c3fc53481ba7a35461cf7c5ab66aa9d6775b609')
 
 build() {
   cd curl-$pkgver
