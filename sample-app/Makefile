@@ -25,7 +25,7 @@ INCLUDES	:=
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -O3 -Wall -Wextra $(MACHDEP) $(INCLUDE)
+CFLAGS	= -O3 -Wall -Wextra `powerpc-eabi-pkg-config libcurl mbedtls --cflags` $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS)
 
 LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
@@ -33,7 +33,7 @@ LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lcurl -lz -lmbedtls -lmbedcrypto -lmbedx509 -lwiisocket -logc -lm
+LIBS	:=	`powerpc-eabi-pkg-config libcurl mbedtls --libs` -logc
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
