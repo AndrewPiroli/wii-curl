@@ -9,6 +9,9 @@ endif
 
 include $(DEVKITPPC)/wii_rules
 
+# Check if pkg-config is available
+PKGCONFIG = $(shell command -v powerpc-eabi-pkg-config --version 2>/dev/null)
+
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
@@ -25,15 +28,25 @@ INCLUDES	:=
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -O3 -Wall -Wextra `powerpc-eabi-pkg-config libcurl mbedtls --cflags` $(MACHDEP) $(INCLUDE)
-CXXFLAGS	=	$(CFLAGS)
+ifeq ($(strip $(PKGCONFIG)),)
+CFLAGS	= -O3 -Wall -Wextra $(MACHDEP) $(INCLUDE)
+else
+CFLAGS	= `powerpc-eabi-pkg-config libcurl mbedtls --cflags` -O3 -Wall -Wextra $(MACHDEP) $(INCLUDE)
+endif
+
+CXXFLAGS	:=	$(CFLAGS)
 
 LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
+
+ifeq ($(strip $(PKGCONFIG)),)
+LIBS	:=	-lcurl -lz -lmbedtls -lmbedcrypto -lmbedx509 -lwiisocket -logc -lm
+else
 LIBS	:=	`powerpc-eabi-pkg-config libcurl mbedtls --libs` -logc
+endif
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
