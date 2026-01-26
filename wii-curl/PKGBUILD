@@ -9,7 +9,7 @@ arch=('any')
 url='https://curl.haxx.se'
 license=('MIT')
 options=(!strip libtool staticlibs)
-depends=('ppc-zlib' 'libwiisocket' 'wii-mbedtls>=3.6.4-1')
+depends=('ppc-zlib' 'wii-mbedtls>=3.6.4-1' 'libogc>=3.0.0')
 makedepends=('wii-pkg-config')
 
 source=("https://curl.haxx.se/download/curl-${pkgver}.tar.xz")
@@ -33,7 +33,7 @@ build() {
     CFLAGS="${CPPFLAGS} ${DKP_INCS}" \
     CPPFLAGS="${CPPFLAGS}" \
     LDFLAGS="${LDFLAGS}" \
-    LIBS="-lmbedtls -lmbedcrypto -lmbedx509 -logc -lwiisocket" \
+    LIBS="-lmbedtls -lmbedcrypto -lmbedx509 -logc" \
     --prefix=${PORTLIBS_PREFIX} --host=powerpc-eabi \
     --disable-shared --enable-static --disable-ipv6 --disable-unix-sockets \
     --disable-manual --disable-ntlm-wb --disable-threaded-resolver --disable-socketpair \

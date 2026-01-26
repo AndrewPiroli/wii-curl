@@ -43,7 +43,7 @@ LDFLAGS	=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map
 #---------------------------------------------------------------------------------
 
 ifeq ($(strip $(PKGCONFIG)),)
-LIBS	:=	-lcurl -lz -lmbedtls -lmbedcrypto -lmbedx509 -lwiisocket -logc -lm
+LIBS	:=	-lcurl -lz -lmbedtls -lmbedcrypto -lmbedx509 -logc -lm
 else
 LIBS	:=	`powerpc-eabi-pkg-config libcurl mbedtls --libs` -logc
 endif
